@@ -5,17 +5,23 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Service
 public class ApiService {
   private final ObjectMapper mapper = new ObjectMapper();
+
+  @Value("${huggingface.token}")
+  private String token;
 
   public ApiService() {
   }
 
   public String gerarResumo(String artista) {
-    String token = "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";
     String jsonBody =
         """
             {
