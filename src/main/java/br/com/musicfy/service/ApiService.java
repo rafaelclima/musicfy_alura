@@ -5,36 +5,36 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Service
 public class ApiService {
   private final ObjectMapper mapper = new ObjectMapper();
 
-  @Value("${huggingface.token}")
-  private String token;
+  private String token = System.getenv("HF_TOKEN");
 
   public ApiService() {
   }
 
   public String gerarResumo(String artista) {
+
+    if (token == null) {
+      throw new RuntimeException("Token de autorização do Hugging Face não encontrado");
+    }
+
     String jsonBody =
         """
             {
-              "model": "meta-llama/llama-3.2-3b-instruct",
+              "model": "meta-llama/llama-3-8b-instruct",
               "stream": false,
               "messages": [
                 {
                   "role": "system",
-                  "content": "Você é um assistente, que responde em português do Brasil, de forma resumida e objetiva sobre o(a) artista ou banda solicitado(a). Esse artista ou banda pode ser do mundo todo. Por se tratar de artista do ramo da música, quero que você insira nesse resumo as principais canções."
+                  "content": "Você é um assistente especializado em resumir informações sobre artistas ou bandas. Você só responde em português do Brasil, de forma resumida e objetiva sobre o(a) artista ou banda solicitado(a) pelo usuário. Por se tratar de artista do ramo da música, quero que você insira nesse resumo os principais trabalhos, álbuns e músicas do artista ou banda."
                 },
                 {
                   "role": "user",
-                  "content": "Me dê um resumo breve e objetivo sobre o(a) artista ou a banda a seguir: %s"
+                  "content": "Quero saber mais sobre %s"
                 }
               ]
             }
